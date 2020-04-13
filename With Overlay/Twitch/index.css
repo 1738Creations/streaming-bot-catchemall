@@ -1,0 +1,41 @@
+body {
+	background-color: rgb(255,255,255,0);
+	font-family: arial;
+}
+
+/*MASTER CONTAINER*/
+#MasterContainer {
+	width: 600px;
+	height: auto;
+	position: absolute;
+	text-align: center;
+	visibility: /*mvis*/hidden/*/mvis*/;
+}
+
+/*IMAGE AREA*/
+#MasterImageContainer {
+	width: 300px;
+	height: 300px;
+	margin: auto;
+	background: /*i-add*/url("images/epic-03.png")/*/i-add*/;
+}
+
+#CollectibleImage {
+	width: 100%;
+	height: 100%;
+}
+
+#MasterStatsContainer {
+	width: auto;
+	margin-top: 10px;
+	text-align: center;
+}
+#MasterStatsContainer p {
+	margin: 0px;
+	padding: 0px;
+	font-size: 30px;
+	text-shadow: -0.5px 0.5px 0 rgb(255,255,255,1),
+				  0.5px 0.5px 0 rgb(255,255,255,1),
+				 0.5px -0.5px 0 rgb(255,255,255,1),
+				-0.5px -0.5px 0 rgb(255,255,255,1);
+}
