@@ -2,7 +2,7 @@ Streaming Bot - CatchEmAll
 ==========================
 A collectible game users in stream chats can play. Helpful to keep users interested during slow streams, although it can clog up chat.
 
-Every x minutes (6 to 8 default) a collectible will trigger and chat notified. There are 4 tiers of collectibles, each with different chances of spawning. Once spawned, users can shout '!catch' to try and collect it. The game ends after x seconds (10 default) or if a user wins the random number generator.
+Every x minutes (6 to 8 default) a collectible will trigger and chat notified. Or 4 minutes from initially starting the game. There are 4 tiers of collectibles, each with different chances of spawning. Once spawned, users can shout '!catch' to try and collect it. The game ends after x seconds (10 default) or if a user wins the random number generator.
 
 Each player has 2 turns per spawn, which could be enhanced to give specific players more chances. If a plyer wins, their details are logged to a local file and they get a shout out in public chat. This is a simple Node.js which should run on any system and doesn't need to be on the hosts machine.
 
