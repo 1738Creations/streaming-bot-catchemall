@@ -212,8 +212,7 @@ getUserInfo().then(async userInfo => {
 	// Starts the game
 	// (function, time before game starts in ms, joinChat)
 	// ...if set too low (less than a second) it may not fire the initial chat message as the bot can take a while to join chat
-	//setTimeout(startCollectibleGame, 240000, socket); // 4 minutes (240000) from boot/joining channel
-	setTimeout(startCollectibleGame, 15000, socket); // 4 minutes (240000) from boot/joining channel
+	setTimeout(startCollectibleGame, 240000, socket); // 4 minutes (240000) from boot/joining channel
 
     // Send a message once connected to chat.
 	// Optional; announces to chat the bot is now online
@@ -466,6 +465,5 @@ function HideResultsScreen(socket) {
 	HTMLUpdate(1, "");
 
 	// Start another game in 8 to 10 minutes 
-	//setTimeout(startCollectibleGame, (randomIntFromInterval(360, 480) * 1000), socket); // 6 mins (360), 8 mins (480)
-	setTimeout(startCollectibleGame, 15000, socket); // 6 mins (360), 8 mins (480)
+	setTimeout(startCollectibleGame, (randomIntFromInterval(360, 480) * 1000), socket); // 6 mins (360), 8 mins (480)
 }
