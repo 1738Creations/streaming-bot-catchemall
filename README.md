@@ -2,6 +2,12 @@ Streaming Bot - CatchEmAll
 ==========================
 A collectible game users in stream chats can play. Helpful to keep users interested during slow streams, although it can clog up chat.
 
+There are now 2 versions:
+- Basic
+  - Simple bot which runs and interacts with chat
+- With Overlay
+  - An enhanced version of 'Basic' which can also show overlay notifications in OBS
+
 Every x minutes (6 to 8 default) a collectible will trigger and chat notified. Or 4 minutes from initially starting the game. There are 4 tiers of collectibles, each with different chances of spawning. Once spawned, users can shout '!catch' to try and collect it. The game ends after x seconds (10 default) or if a user wins the random number generator.
 
 Each player has 2 turns per spawn, which could be enhanced to give specific players more chances. If a plyer wins, their details are logged to a local file and they get a shout out in public chat. This is a simple Node.js which should run on any system and doesn't need to be on the hosts machine.
@@ -13,6 +19,8 @@ Obviously by 'collectible' I mean Pokemon, but it's up to someone else to enter 
 This was originally written for Mixer then ported to Twitch. The coding is nearly identical. The big differences are connection methods and messaging.
 
 Twitch doesn't fully support whispers, Mixer does. I created a new Twitch account and 3 days later I was still unable to send whispers. Apparently this is intentional as some form of anti-spam? It's ridiculous and greatly reduces the viability of this game. There's a Twitch script regardless.
+
+I KNOW... that dynamically updating the HTML and CSS in the way I have is very bad. It was the simplest way I could think of without using a ton of external libraries. The idea is to keep these bots simple so an average streamer can figure them out.
 
 
 LEGAL STUFF:
@@ -106,6 +114,23 @@ The chance of a user winning one of the randomly picked items in one of these ar
 The number of chances per spawn is set with 'DefaultChancesPerUser'. As noted in the script, this could be expanded to reward subscribers or followers with more attempts.
 
 Functions with 'setTimeout' control when the game starts and how long before the spawn stays active. There are 2 start points. The first is when the bot launches. This was a personal preference as I'd like it different than the global setting which is between 2 random numbers (spawn every 6 to 8 minutes).
+
+
+CONFIGURATION (With Overlay):
+=============================
+The overlay version has an additional parameter in the collectible array:
+- ['Common Collectible 1', 'images/common-01.png']
+
+The first item is still the name of the collectible. The second is the image which will be displayed for this collectible in the HTML overlay. There are no existence checks so be careful or add some!
+
+As mentioned at the top of this file, the HTML/CSS updating is not something you would put in to a paid production project. It's good enough for streaming games with friends and having a laugh. The HTML and CSS files are rewritten by the Node script when a competition triggers, shows results or ends. Anything relating to Java is vile and should not be used by anyone, ever. I didn't want to make ASP or PHP pages which are require additional learning from end users. So I went with HTML rewrites. How does that work?
+
+The CSS and HTML files have multi-line comments formed such as:
+- /*i-add*/url("images/epic-03.png")/*/i-add*/
+
+The Node script would look for the tage '/*i-add*/' then '/*/i-add*/' and replace anything between. Job done. It's not fantastically fast but the HTML and CSS are small so it's fast enough. A lot could be done to speed up the process or use fewer resources. Maybe that's something to look for in the future. Maybe this will convince someone to stop streaming, learn something then teach me!
+
+An audio cue would be handy but I didn't want it. It would also mean an external library for Node and the goal of these scripts is to be accessible.
 
 
 LIVE DEMO:
