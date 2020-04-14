@@ -118,6 +118,8 @@ Functions with 'setTimeout' control when the game starts and how long before the
 
 CONFIGURATION (With Overlay):
 =============================
+The default width is 600pixels. Height is set to 'auto'. OBS will need width set to '600' pixels with the height at... anything you want. I'd recomment 600 to cater for users with very long names, though that is a excessive. If it's set to the wrong height or width there won't be any distortions, parts will simply be cut off. As teh background is transparent, you just need to leave enough room for potentially long text.
+
 The overlay version has an additional parameter in the collectible array:
 - ['Common Collectible 1', 'images/common-01.png']
 
