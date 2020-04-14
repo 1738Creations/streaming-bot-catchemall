@@ -5,7 +5,7 @@ body {
 
 /*MASTER CONTAINER*/
 #MasterContainer {
-	width: 600px;
+	width: 500px;
 	height: auto;
 	position: absolute;
 	text-align: center;
@@ -17,7 +17,7 @@ body {
 	width: 300px;
 	height: 300px;
 	margin: auto;
-	background: /*i-add*/url("images/common-11.png")/*/i-add*/;
+	background: /*i-add*/url("images/common-01.png")/*/i-add*/;
 }
 
 #CollectibleImage {
@@ -31,11 +31,10 @@ body {
 	text-align: center;
 }
 #MasterStatsContainer p {
-	margin: 0px;
-	padding: 0px;
+	background-color: rgb(0,0,0,0.75);
+	color: rgb(255,255,255,1);
+	word-break: break-all;
+	margin: 1px;
+	padding: 6px;
 	font-size: 30px;
-	text-shadow: -0.5px 0.5px 0 rgb(255,255,255,1),
-				  0.5px 0.5px 0 rgb(255,255,255,1),
-				 0.5px -0.5px 0 rgb(255,255,255,1),
-				-0.5px -0.5px 0 rgb(255,255,255,1);
 }
