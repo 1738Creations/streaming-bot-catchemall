@@ -197,13 +197,13 @@ getUserInfo().then(async userInfo => {
 								var date = new Date();
 
 								// Write the player details to a local file (csv)
-								fs.appendFile("winners.csv", data.user_id + "," + data.user_name + "," + SelectedRarity + "," + SelectedRarity + "," + date + "\n", (err) => {
+								fs.appendFile("winners.csv", data.user_id + "," + data.user_name + "," + SelectedRarity + "," + SelectedCollectible + "," + date + "\n", (err) => {
 									// Break if file writing error
 									if (err) throw err;
 
 									// Log to output window that a winner has been found in case the host can't keep up with chat
 									console.log("Winner written to file:");
-									console.log(data.user_name + "," + SelectedRarity + "," + SelectedRarity);
+									console.log(data.user_name + "," + SelectedRarity + "," + SelectedCollectible);
 								});
 							}
 
