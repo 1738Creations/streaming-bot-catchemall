@@ -1,5 +1,6 @@
-// For connecting to Twitch
-const tmi = require('tmi.js');
+// For connecting to Mixer
+const Mixer = require('@mixer/client-node');
+const ws = require('ws');
 
 // For writing files
 const fs = require('fs');
@@ -168,175 +169,181 @@ var SelectedCollectible = "";
 var NumberUsersNeedsToMatch = 0
 
 
-// Twitch
-// Define configuration options
-const opts = {
-	identity: {
-		username: <replace_me>, // Name of the bot account, example: username: 'accountname'
-		password: <replace_me> // Auth token of the bot account, example: password: 'oauth:4seeee33535ewer35tewrw334'
-	},
-	channels: [
-		<replace_me> // Name of channel to join, example: 'channel_name'
-	]
+// Mixer
+// Instantiate a new Mixer Client
+// See the Mixer documentation for anything related to their system
+// https://dev.mixer.com/
+const client = new Mixer.Client(new Mixer.DefaultRequestRunner());
+
+client.use(new Mixer.OAuthProvider(client, {
+    tokens: {
+        access: <replace_me>, // access: 'xxxj2kdl2j5er4il2rhew3i43lrhlwe423423',
+        // Tokens retrieved via this page last for 1 year.
+        expires: Date.now() + (365 * 24 * 60 * 60 * 1000)
+    },
+}));
+
+// Mixer
+// Joins the bot to chat
+async function joinChat(userId, channelId) {
+    const joinInformation = await getConnectionInformation(channelId);
+    const socket = new Mixer.Socket(ws, joinInformation.endpoints).boot();
+
+    return socket.auth(channelId, userId, joinInformation.authkey).then(() => socket);
 }
 
-// Twitch
-// Create a client with our options
-const client = new tmi.client(opts);
+// Mixer
+// Returns body resposne of bot joining chat
+async function getConnectionInformation(channelId) {
+    return new Mixer.ChatService(client).join(channelId).then(response => response.body);
+}
 
-// Twitch
-// Register our event handlers (defined below)
-client.on('connected', onConnectedHandler);
-client.on('message', onMessageHandler);
-// Twitch won't allow 'new' (I've been registered for 3 days and can't whisper) users to whisper, so this ruins the game and users have to spam chat
-//client.on('whisper', onWhisperHandler);
-
-// Twitch
-// Connect the bot to Twitch
-client.connect();
+// Mixer
+// ...gets details about users in chat
+async function getUserInfo() {
+    return client.request('GET', 'users/current').then(response => response.body);
+}
 
 
-// No Twitch functions below this lineHeight
+// No Mixer functions below this lineHeight
 // ------------------------------------
 
 
-// As noted above when declaring this listener, we can't reliably handle whispers on Twitch...
-//function onWhisperHandler() {
-	// Do stuff here...
-//}
+// Start the bot / join it to chat
+getUserInfo().then(async userInfo => {
+	// The ID of the channel  to join specific channel and verify users messaging the bot are in this channel
+	const targetChannelID = <replace_me>; // example: targetChannelID = 123456789
 
+	// Joins the bot to the channel
+	const socket = await joinChat(userInfo.id, targetChannelID);
 
-// Received a message. This event is fired whenever you receive a chat, action or whisper message
-function onMessageHandler (channel, userstate, msg, self) {
-
-	// Ignore messages from the bot, which shouldn't be an issue but calling it regardless
-	if (self)
-	{ return; }
-	
-	// Remove any extra padding to the message since Twitch doesn't
-	const commandName = msg.trim();
-	
-	//As we can't reliably handle whispers in Twitch, we're don't need to check whether users are in the same channel
-	
-	// We're going to check the type of message - we only care about general chat messages
-	switch(userstate["message-type"])
-	{
-		case "action":
-            // This is an action message..
-            break;
-
-        case "chat":
-			// If a user says '!catchemall' we whisper them with info about the bot/game
-			if (commandName.toLowerCase() === '!catchemall') {
-				// Not a good idea to spam chat with this, but it's an option. Depends how big your channel is
-				//client.say(opts.channels[0], "Collectibles randomly spawn in chat. When they do you'll have 10 seconds to catch it by shouting !catch. 2 balls per user. See stream info for more details.");
-			}
-			
-			// This is the trigger for user interaction; '!catch'
-			// We know the user is in out chat channel...
-			// We need to check if a game has started, if the user has thrown any balls then check if they're a winner or message them that they have no remining chances
-			else if (commandName.toLowerCase() === ('!ball'))
-			{
-				if (GameHasStarted == true)
-				{
-					// Variable for determining whether the user has played this round - 0 for not found
-					var HasUserPlayedThisSession = 0;
-
-					// Check if user has played this session
-					// Look through the array count the number of times this users name appears (if any)
-					// We could use a 2D array ( [[][].[]] ), however that would require extra coding to append the data
-					// ...this way we keep it short and simple as the array is cleared on game end anyway
-					for (const [index, content] of UsersInPlayArray.entries()) {
-						if ( content === userstate['user-id'] ) {
-							HasUserPlayedThisSession += 1; // Sets it to the number of times the user has played this round
-						}
-					}
-
-					// If the user has goes left, let them play
-					// ...if we wanted to give followers of subscribers more attempts, we could case them here and add numbers to 'DefaultChancesPerUser'
-					if (HasUserPlayedThisSession < DefaultChancesPerUser)
-					{
-
-						// Add the user to the array, reducing the number of goes by 1
-						UsersInPlayArray.push(userstate['user-id']);
-
-						// Get a random number between 0 and the 'ChanceOfWinningGlboal' variable
-						var LocalUserGuess = Math.floor(Math.random() * MaxChanceOfWinningGlobal);
-
-						// Winner
-						if (LocalUserGuess == NumberUsersNeedsToMatch){
-
-							// Set the game stopped flag immediately
-							// This is also set in the end game function, but this makes it instant
-							GameHasStarted = false;
-
-							// Update the text to show who won
-							HTMLUpdate(2, userstate['display-name']);
-
-							// Send glboal message to chat indicating who the winner is
-							client.say(opts.channels[0], userstate['display-name'] + " caught the " + SelectedRarity + " '" + SelectedCollectible + "' FBtouchdown");
-
-							// We want the date to log in the file for future reference
-							var date = new Date();
-
-							// Write the player details to a local file (csv)
-							fs.appendFile("winners.csv", userstate['user-id'] + "," + userstate['display-name'] + "," + SelectedRarity + "," + SelectedCollectible + "," + date + "\n", (err) => {
-								// Break if file writing error
-								if (err) throw err;
-
-								// Log to output window that a winner has been found in case the host can't keep up with chat
-								console.log("Winner written to file:");
-								console.log(userstate['display-name'] + "," + SelectedRarity + "," + SelectedCollectible);
-							});
-						}
-
-						// Loser
-						else
-						{
-							// We don't want to announce to chat that the user has lost since that would cause too much spam
-							// ...if we could reliably whisper, we could do that as we do in Mixer. But we can't.
-						}
-					}
-					
-					// The user has no attempts left, but we can't whisper them...
-					else
-					{
-						// Would be nice if whispers worked reliably
-					}
-					
-				}
-				
-				// Game has not started, yet again... whispers
-				else
-				{
-					// Would be nice if whispers worked reliably
-				}
-		
-			}
-            break;
-			
-        case "whisper":
-			// We can also handle whispers here, but we don't care about them
-            break;
-			
-        default:
-            // Should never get here
-			console.log("Unknown command message - should never get here");
-            break;
-    }
-}
-
-
-// Called every time the bot connects to Twitch chat
-function onConnectedHandler (addr, port) {
 	// Starts the game
 	// (function, time before game starts in ms, joinChat)
 	// ...if set too low (less than a second) it may not fire the initial chat message as the bot can take a while to join chat
-	setTimeout(startCollectibleGame, TimeToNextGame);
+	setTimeout(startCollectibleGame, TimeToNextGame, socket);
 
+    // Send a message once connected to chat.
 	// Optional; announces to chat the bot is now online
-	client.say(opts.channels[0], "/me Collectible bot online!");
-}
+	// We could whisper a new user whenever they join but it adds to the interaction if they have to ask the host/clients
+    socket.call("msg", ["/me Collectible bot online!"]);
+
+    // Looks for any chat message (main chat, whispers...)
+	// For this game we don't care if people spam main chat with the command, if we did we'd force the bot to only listen for whispers
+	// -- data.message.meta[0].whisper == true)
+	// -- https://dev.mixer.com/reference/chat/events/chatmessage
+    socket.on('ChatMessage', data => {
+
+		// Verify the users are in our channel.
+		// We don't want people whispering from another channel, silently ignore them
+		if (data.channel == targetChannelID){
+		
+			// If the message has contents we can read
+			if (data.message.message[0].data)
+			{
+				// Here we read the messages and branch off if we find one containing specific text
+				// ...
+				
+				// If a user says '!catchemall' we whisper them with info about the bot/game
+				if (data.message.message[0].data.toLowerCase().startsWith("!catchemall"))
+				{
+					socket.call("whisper", [data.user_name, "Collectibles randomly spawn in chat. When they do you'll have 10 seconds to catch it by shouting !catch. 2 balls per user. See stream info for more details."]);
+				}
+
+				// This is the trigger for user interaction; '!catch'
+				// We know the user is in out chat channel...
+				// We need to check if a game has started, if the user has thrown any balls then check if they're a winner or message them that they have no remining chances
+				else if (data.message.message[0].data.toLowerCase().startsWith("!catch"))
+				{
+
+					// If the game has started we run some checks or whisper the user with an appropriate error message
+					if (GameHasStarted == true)
+					{
+
+						// Variable for determining whether the user has played this round - 0 for not found
+						var HasUserPlayedThisSession = 0;
+
+						// Check if user has played this session
+						// Look through the array count the number of times this users name appears (if any)
+						// We could use a 2D array ( [[][].[]] ), however that would require extra coding to append the data
+						// ...this way we keep it short and simple as the array is cleared on game end anyway
+						for (const [index, content] of UsersInPlayArray.entries()) {
+							if ( content === data.user_id ) {
+								HasUserPlayedThisSession += 1; // Sets it to the number of times the user has played this round
+							}
+						}
+
+						// If the user has goes left, let them play
+						// ...if we wanted to give followers of subscribers more attempts, we could case them here and add numbers to 'DefaultChancesPerUser'
+						if (HasUserPlayedThisSession < DefaultChancesPerUser) {
+
+							// Add the user to the array, reducing the number of goes by 1
+							UsersInPlayArray.push(data.user_id);
+
+							// Get a random number between 0 and the 'ChanceOfWinningGlboal' variable
+							var LocalUserGuess = Math.floor(Math.random() * MaxChanceOfWinningGlobal);
+
+							// Winner
+							if (LocalUserGuess == NumberUsersNeedsToMatch){
+
+								// Set the game stopped flag immediately
+								// This is also set in the end game function, but this makes it instant
+								GameHasStarted = false;
+
+								// Update the text to show who won
+								HTMLUpdate(2, data.user_name);
+
+								// Send glboal message to chat indicating who the winner is
+								socket.call("msg", ["/me " + data.user_name + " caught the " + SelectedRarity + " '" + SelectedCollectible + "' :trophy"]);
+
+								// We want the date to log in the file for future reference
+								var date = new Date();
+
+								// Write the player details to a local file (csv)
+								fs.appendFile("winners.csv", data.user_id + "," + data.user_name + "," + SelectedRarity + "," + SelectedCollectible + "," + date + "\n", (err) => {
+									// Break if file writing error
+									if (err) throw err;
+
+									// Log to output window that a winner has been found in case the host can't keep up with chat
+									console.log("Winner written to file:");
+									console.log(data.user_name + "," + SelectedRarity + "," + SelectedCollectible);
+								});
+							}
+
+							// Loser
+							else
+							{
+								// It may be better to comment this out/remove as it could trigger anti-spam if there are many players
+								socket.call("whisper", [data.user_name, "Not good enough! You have " + (DefaultChancesPerUser - HasUserPlayedThisSession - 1) + " chance(s) remaining :spicy"]);
+							}
+
+						}
+
+						// If the user has no more goes left, inform them with a whisper
+						else
+						{
+							// It may be better to comment this out/remove as it could trigger anti-spam if there are many players
+							socket.call("whisper", [data.user_name, "You have no chances remaining :facepalm"]);
+						}
+						
+					}
+					
+					// Game has not started, whisper the user to inform them
+					else
+					{
+						// It may be better to comment this out/remove as it could trigger anti-spam if there are many players
+						socket.call("whisper", [data.user_name, "There are no collectibles in range :facepalm"]);
+					}
+				}
+			}
+		}
+    });
+
+    // Handle errors
+    socket.on('error', error => {
+        console.error('Socket error');
+        console.error(error);
+    });
+});
 
 
 // Returns a random value between 2 numbers, used for odds calculations
@@ -345,7 +352,7 @@ function randomIntFromInterval(min, max) {
 }
 
 // Start the game
-function startCollectibleGame() {
+function startCollectibleGame(socket) {
 	// I've tried to make the way collectibles are spawned as simple as possible while adding some rarity, not everyone is great at maths
 	// Odds are based on '100'. So if 'ChangeOfLegendarySpawning' was '0.15' then there would be a 15 in 100 chance (not really)
 	// ...in reality we would need to calculate the odds of all 4 chances together rather than basing it off a single random call
@@ -426,21 +433,21 @@ function startCollectibleGame() {
 	CSSUpdate("visible", SelectedCollectibleImage);
 
 	// Announce to chat that a collectible is available
-	client.say(opts.channels[0], "A wild " + SelectedRarity + " '" + SelectedCollectible + "' has appeared in chat KAPOW")
+	socket.call("msg", ["A wild " + SelectedRarity + " '" + SelectedCollectible + "' has appeared in chat :go"]);
  
 	// Set the game has started flag so users can try to collect it
 
 	// Start the game end timer
-	setTimeout(endCollectibleGame, TimeGameIsActiveFor);
+	setTimeout(endCollectibleGame, TimeGameIsActiveFor, socket);
 }
 
 
 // End the game if the time has run out
-function endCollectibleGame() {
+function endCollectibleGame(socket) {
 	// If the game has started, announce the game over message to chat
 	// We won't get this message if someone has won since the started flag is set to false before this
 	if (GameHasStarted == true) {
-		client.say(opts.channels[0], "The wild " + SelectedRarity + " '" + SelectedCollectible + "' escaped chat HSWP");
+		socket.call("msg", ["The wild " + SelectedRarity + " '" + SelectedCollectible + "' escaped chat :rip"]);
 		
 		// Update the text to show nobody won
 		HTMLUpdate(2, "");
@@ -454,16 +461,16 @@ function endCollectibleGame() {
 	UsersInPlayArray = [];
 	
 	// Remove the results screen after this time
-	setTimeout(HideResultsScreen, TimeToShowGameOverScreen)
+	setTimeout(HideResultsScreen, TimeToShowGameOverScreen, socket)
 }
 
 //
-function HideResultsScreen() {
+function HideResultsScreen(socket) {
 	// Hide the overlay
 	CSSUpdate("hidden", null);
 	// Reset the HTML for the next game
 	HTMLUpdate(1, "");
 
 	// Start another game
-	setTimeout(startCollectibleGame, TimeToNextGame); // 6 mins (360), 8 mins (480)
+	setTimeout(startCollectibleGame, TimeToNextGame, socket);
 }

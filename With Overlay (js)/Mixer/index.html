@@ -6,16 +6,15 @@
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<link rel="stylesheet" type="text/css" href="index.css">
 	
 	<!-- Page refresh alternative to HTML, will reduce flicker -->
-	<script src="container.js"></script>
+	<script src="index.js"></script>
 </head>
 
 <!-- OBS default overrides background with transparency. We'll copy this functionality in the css just in case it stops one day -->
 
 <!-- We need to start the refresh function on page load -->
 <body onload="DoOnPageLoad();">
-	<iframe id="TheIframe" src="index.html" frameborder="0" style="display: block; width:1920px; height:1080px; background-color: rgb(255,255,255,0);"></iframe> 
+	<iframe id="TheIframe" src="child.html" frameborder="0" style="display: block; width:1920px; height:1080px; background-color: rgb(255,255,255,0);"></iframe> 
 </body>
 </html>

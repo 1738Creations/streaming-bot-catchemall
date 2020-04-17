@@ -23,7 +23,7 @@ function DoOnPageLoad() {
 function RefreshHTML() {
 	var promise = Promise.resolve();
 	
-	promise = promise.then(fetch('index.html', {mode: 'no-cors'})
+	promise = promise.then(fetch('child.html', {mode: 'no-cors'})
 		.then(res => res.text())
 		.then((data) => {
 			
@@ -46,7 +46,7 @@ function RefreshHTML() {
 function RefreshCSS() {
 	var promise = Promise.resolve();
 
-	promise = promise.then(fetch('index.css', {mode: 'no-cors'})
+	promise = promise.then(fetch('child.css', {mode: 'no-cors'})
 		.then(res => res.text())
 		.then((data) => {
 
