@@ -9,7 +9,7 @@ There are now 3 versions:
   - An enhanced version of 'Basic' which can also show overlay notifications in OBS
 - With Overlay (js)
   - A different way to refresh a page using js
-  - Will eliminate the flickering
+  - Will eliminate the flickering (using an iframe and js)
   - Must be run on a web server or it won't be able to read the local files
     - Use XAMPP, 30 second local web server set up and you're good to go
 
@@ -152,6 +152,8 @@ Available on request. I have a Mixer and Twitch demo channel used for developing
 CONFIGURATION (With Overlay - JS version):
 ==========================================
 Not much different regarding the node code, it's mostly the web files. In the pure HTML version the page refreshes every second. This can obviously cause some very minor flickering. To get around this, refresh was removed from teh HTML file and put in a JS script. The script looks for differences in the HTML/CSS files then triggers a refresh if it finds one. Flicker gone. Uses more resources. It doesn't take in to account the time to read each file, but they're very small. The time can be reduced below 1 second (currently set) which still wouldn't cause a flicker, unlike the HTML which would become significantly worse.
+
+The landing page is 'index.html', which loads 'child.html' in an iframe set with in-line styling. The child page is the one which is refreshed and contains the collectible graphics we show on stream.
 
 This version has to be run from a web server. If not, the local files won't be picked up and the page will never refresh. I use XAMPP. It couldn't be easier to set up. Download, run installer, start server, go to localhost, done.
 - https://www.apachefriends.org/download.html
