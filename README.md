@@ -2,11 +2,16 @@ Streaming Bot - CatchEmAll
 ==========================
 A collectible game users in stream chats can play. Helpful to keep users interested during slow streams, although it can clog up chat.
 
-There are now 2 versions:
+There are now 3 versions:
 - Basic
   - Simple bot which runs and interacts with chat
 - With Overlay
   - An enhanced version of 'Basic' which can also show overlay notifications in OBS
+- With Overlay (js)
+  - A different way to refresh a page using js
+  - Will eliminate the flickering
+  - Must be run on a web server or it won't be able to read the local files
+    - Use XAMPP, 30 second local web server set up and you're good to go
 
 Every x minutes (6 to 8 default) a collectible will trigger and chat notified. Or 4 minutes from initially starting the game. There are 4 tiers of collectibles, each with different chances of spawning. Once spawned, users can shout '!catch' to try and collect it. The game ends after x seconds (10 default) or if a user wins the random number generator.
 
