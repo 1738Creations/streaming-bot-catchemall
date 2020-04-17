@@ -10,6 +10,14 @@ CSSUpdate("hidden", null);
 // Reset data on the HTML for a new game
 HTMLUpdate(1, "");
 
+// Time between games in ms, we multiply by 1000 to get seconds
+var TimeToNextGame = randomIntFromInterval(360, 480) * 1000; // 6 to 8 minutes
+// As it states, in ms
+var TimeGameIsActiveFor = 15000; // 15 seconds
+// As it states, in ms
+var TimeToShowGameOverScreen = 15000; // 15 seconds
+
+
 // CssVisibility = visible/hidden
 // CssImage = index in 
 function CSSUpdate(CssVisibility, CssImage) {
@@ -212,7 +220,7 @@ getUserInfo().then(async userInfo => {
 	// Starts the game
 	// (function, time before game starts in ms, joinChat)
 	// ...if set too low (less than a second) it may not fire the initial chat message as the bot can take a while to join chat
-	setTimeout(startCollectibleGame, 240000, socket); // 4 minutes (240000) from boot/joining channel
+	setTimeout(startCollectibleGame, TimeToNextGame, socket);
 
     // Send a message once connected to chat.
 	// Optional; announces to chat the bot is now online
@@ -430,8 +438,7 @@ function startCollectibleGame(socket) {
 	// Set the game has started flag so users can try to collect it
 
 	// Start the game end timer
-	// 10 seconds (10000 ms) for users to perform an action
-	setTimeout(endCollectibleGame, 10000, socket);
+	setTimeout(endCollectibleGame, TimeGameIsActiveFor, socket);
 }
 
 
@@ -454,7 +461,7 @@ function endCollectibleGame(socket) {
 	UsersInPlayArray = [];
 	
 	// Remove the results screen after this time
-	setTimeout(HideResultsScreen, 15000, socket)
+	setTimeout(HideResultsScreen, TimeToShowGameOverScreen, socket)
 }
 
 //
@@ -464,6 +471,6 @@ function HideResultsScreen(socket) {
 	// Reset the HTML for the next game
 	HTMLUpdate(1, "");
 
-	// Start another game in 8 to 10 minutes 
-	setTimeout(startCollectibleGame, (randomIntFromInterval(360, 480) * 1000), socket); // 6 mins (360), 8 mins (480)
+	// Start another game
+	setTimeout(startCollectibleGame, TimeToNextGame, socket);
 }
