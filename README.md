@@ -73,7 +73,6 @@ TWITCH:
 It's assumed users have followed the installation on the dev sites...
 Ref: https://dev.mixer.com/guides/chat/introduction
 
-
 Search the script for '<replace_me>' and replace the details as they're found:
 
 - username: <replace_me>
@@ -86,7 +85,6 @@ Search the script for '<replace_me>' and replace the details as they're found:
 
 - channels: [ <replace_me> ]
 -- Name of the channel to join as it appears in a browser such as: https://www.mixer.com/replace_me
-
 
 Run the script: node CatchEmAll-Bot_twitch.js
 - When a collectible spawns, say '!catch' in chat to try and catch it
