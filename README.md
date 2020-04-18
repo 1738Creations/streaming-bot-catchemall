@@ -140,15 +140,6 @@ The Node script would look for the tage '/*i-add*/' then '/*/i-add*/' and replac
 An audio cue would be handy but I didn't want it. It would also mean an external library for Node and the goal of these scripts is to be accessible.
 
 
-LIVE DEMO:
-==========
-Available on request. I have a Mixer and Twitch demo channel used for developing and testing stream tools:
-- https://mixer.com/1738_Creations
-- https://www.twitch.tv/1738_creations
-
-...the bots only run when I stream. If you'd like a demo then send a request (1738creations@gmail.com) with the stream name and I'll set them up. My scripts are customised to run a South Park Chinpokomon style game.
-
-
 CONFIGURATION (With Overlay - JS version):
 ==========================================
 Not much different regarding the node code, it's mostly the web files. In the pure HTML version the page refreshes every second. This can obviously cause some very minor flickering. To get around this, refresh was removed from teh HTML file and put in a JS script. The script looks for differences in the HTML/CSS files then triggers a refresh if it finds one. Flicker gone. Uses more resources. It doesn't take in to account the time to read each file, but they're very small. The time can be reduced below 1 second (currently set) which still wouldn't cause a flicker, unlike the HTML which would become significantly worse.
@@ -161,6 +152,16 @@ This version has to be run from a web server. If not, the local files won't be p
 Neither way was particularly accurate in terms of timing, but it's good enough for a quick and cheap game.
 
 Personally, I'd live with an occasional flicker in the HTML version.
+
+
+LIVE DEMO:
+==========
+Available on request. I have a Mixer and Twitch demo channel used for developing and testing stream tools:
+- https://mixer.com/1738_Creations
+- https://www.twitch.tv/1738_creations
+
+...the bots only run when I stream. If you'd like a demo then send a request (1738creations@gmail.com) with the stream name and I'll set them up. My scripts are customised to run a South Park Chinpokomon style game.
+
 
 
 ======================
