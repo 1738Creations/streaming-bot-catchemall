@@ -36,7 +36,7 @@ function CSSUpdate(CssVisibility, CssImage) {
 		var CssVisibilityAfter = data.substring(data.lastIndexOf("/*/mvis*/"), data.length);
 
 		// Build the HTML output, inserting our questions and answers
-		var CompiledHTMLData = CssVisibilityBefore + CssVisibility + CssVisibilityAfter;
+		var CompiledCSSData = CssVisibilityBefore + CssVisibility + CssVisibilityAfter;
 	}
 	else
 	{
@@ -46,11 +46,11 @@ function CSSUpdate(CssVisibility, CssImage) {
 		var CssURLAfter = data.substring(data.lastIndexOf("/*/i-add*/"), data.length);
 
 		// Build the HTML output, inserting our questions and answers
-		var CompiledHTMLData = CssVisibilityBefore + CssVisibility + CssURLBefore + "url(\"" + CssImage + "\")" + CssURLAfter;
+		var CompiledCSSData = CssVisibilityBefore + CssVisibility + CssURLBefore + "url(\"" + CssImage + "\")" + CssURLAfter;
 	}
 
 	// Write the CSS with our compiled data
-	fs.writeFileSync('index.css', CompiledHTMLData, (err) => {
+	fs.writeFileSync('index.css', CompiledCSSData, (err) => {
 	if (err) throw err;
 		console.log('Error writing to file.');
 		console.log(err);
